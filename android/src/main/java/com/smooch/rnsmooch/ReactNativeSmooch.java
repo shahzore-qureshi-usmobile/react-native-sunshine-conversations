@@ -10,12 +10,13 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.Promise;
 
-import java.util.HashMap;
-import java.util.Map;
+// import java.util.HashMap;
+// import java.util.Map;
 
+import io.smooch.core.Settings;
 import io.smooch.core.Smooch;
 import io.smooch.core.SmoochCallback;
-import io.smooch.core.User;
+// import io.smooch.core.User;
 import io.smooch.ui.ConversationActivity;
 
 public class ReactNativeSmooch extends ReactContextBaseJavaModule {
@@ -29,8 +30,8 @@ public class ReactNativeSmooch extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void login(String userId, String jwt, final Promise promise) {
-        Smooch.login(userId, jwt, new SmoochCallback() {
+    public void init(String integrationId, final Promise promise) {
+        Smooch.init(this, new Settings(integrationId), new SmoochCallback() {
             @Override
             public void run(Response response) {
                 if (promise != null) {
@@ -46,73 +47,90 @@ public class ReactNativeSmooch extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void logout(final Promise promise) {
-        Smooch.logout(new SmoochCallback() {
-            @Override
-            public void run(Response response) {
-                if (response.getError() != null) {
-                    promise.reject("" + response.getStatus(), response.getError());
-                    return;
-                }
-
-                promise.resolve(null);
-            }
-        });
-    }
-
-    @ReactMethod
     public void show() {
-        ConversationActivity.show(getReactApplicationContext(), Intent.FLAG_ACTIVITY_NEW_TASK);
+        ConversationActivity.builder().show(getReactApplicationContext(), Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
     @ReactMethod
     public void close() {
-        ConversationActivity.close();
+        ConversationActivity.builder().close();
     }
 
-    @ReactMethod
-    public void getUnreadCount(Promise promise) {
-        int unreadCount = Smooch.getConversation().getUnreadCount();
-        promise.resolve(unreadCount);
-    }
+    // @ReactMethod
+    // public void login(String userId, String jwt, final Promise promise) {
+    //     Smooch.login(userId, jwt, new SmoochCallback() {
+    //         @Override
+    //         public void run(Response response) {
+    //             if (promise != null) {
+    //                 if (response.getError() != null) {
+    //                     promise.reject("" + response.getStatus(), response.getError());
+    //                     return;
+    //                 }
 
-    @ReactMethod
-    public void setFirstName(String firstName) {
-        User.getCurrentUser().setFirstName(firstName);
-    }
+    //                 promise.resolve(null);
+    //             }
+    //         }
+    //     });
+    // }
 
-    @ReactMethod
-    public void setLastName(String lastName) {
-        User.getCurrentUser().setLastName(lastName);
-    }
+    // @ReactMethod
+    // public void logout(final Promise promise) {
+    //     Smooch.logout(new SmoochCallback() {
+    //         @Override
+    //         public void run(Response response) {
+    //             if (response.getError() != null) {
+    //                 promise.reject("" + response.getStatus(), response.getError());
+    //                 return;
+    //             }
 
-    @ReactMethod
-    public void setEmail(String email) {
-        User.getCurrentUser().setEmail(email);
-    }
+    //             promise.resolve(null);
+    //         }
+    //     });
+    // }
 
-    @ReactMethod
-    public void setUserProperties(ReadableMap properties) {
-        User.getCurrentUser().addProperties(getUserProperties(properties));
-    }
+    // @ReactMethod
+    // public void getUnreadCount(Promise promise) {
+    //     int unreadCount = Smooch.getConversation().getUnreadCount();
+    //     promise.resolve(unreadCount);
+    // }
 
-    private Map<String, Object> getUserProperties(ReadableMap properties) {
-        ReadableMapKeySetIterator iterator = properties.keySetIterator();
-        Map<String, Object> userProperties = new HashMap<>();
+    // @ReactMethod
+    // public void setFirstName(String firstName) {
+    //     User.getCurrentUser().setFirstName(firstName);
+    // }
 
-        while (iterator.hasNextKey()) {
-            String key = iterator.nextKey();
-            ReadableType type = properties.getType(key);
-            if (type == ReadableType.Boolean) {
-                userProperties.put(key, properties.getBoolean(key));
-            } else if (type == ReadableType.Number) {
-                userProperties.put(key, properties.getDouble(key));
-            } else if (type == ReadableType.String) {
-                userProperties.put(key, properties.getString(key));
-            }
-        }
+    // @ReactMethod
+    // public void setLastName(String lastName) {
+    //     User.getCurrentUser().setLastName(lastName);
+    // }
 
-        return userProperties;
-    }
+    // @ReactMethod
+    // public void setEmail(String email) {
+    //     User.getCurrentUser().setEmail(email);
+    // }
+
+    // @ReactMethod
+    // public void setUserProperties(ReadableMap properties) {
+    //     User.getCurrentUser().addProperties(getUserProperties(properties));
+    // }
+
+    // private Map<String, Object> getUserProperties(ReadableMap properties) {
+    //     ReadableMapKeySetIterator iterator = properties.keySetIterator();
+    //     Map<String, Object> userProperties = new HashMap<>();
+
+    //     while (iterator.hasNextKey()) {
+    //         String key = iterator.nextKey();
+    //         ReadableType type = properties.getType(key);
+    //         if (type == ReadableType.Boolean) {
+    //             userProperties.put(key, properties.getBoolean(key));
+    //         } else if (type == ReadableType.Number) {
+    //             userProperties.put(key, properties.getDouble(key));
+    //         } else if (type == ReadableType.String) {
+    //             userProperties.put(key, properties.getString(key));
+    //         }
+    //     }
+
+    //     return userProperties;
+    // }
 
 }

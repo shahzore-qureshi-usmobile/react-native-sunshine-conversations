@@ -12,5 +12,9 @@
   "bugs": {
     "url": "https://github.com/smooch/react-native-smooch/issues"
   },
-  "homepage": "https://smooch.io/is"
+  "homepage": "https://smooch.io/is",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  }
 }

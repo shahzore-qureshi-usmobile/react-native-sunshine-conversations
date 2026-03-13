@@ -1,6 +1,8 @@
 package com.smooch.rnsmooch;
 
+import android.app.Application;
 import android.content.Intent;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -13,16 +15,23 @@ import com.facebook.react.bridge.Promise;
 // import java.util.HashMap;
 // import java.util.Map;
 
+import io.smooch.core.InitializationStatus;
+// import io.smooch.core.Logger;
 import io.smooch.core.Settings;
 import io.smooch.core.Smooch;
 import io.smooch.core.SmoochCallback;
 // import io.smooch.core.User;
+
+import io.smooch.features.conversationlist.ConversationListActivity;
 import io.smooch.ui.ConversationActivity;
 
 public class ReactNativeSmooch extends ReactContextBaseJavaModule {
+    String LOG_TAG = "RCTSmooch";
+    boolean initialized = false;
+
     @Override
     public String getName() {
-        return "SmoochManager";
+        return "RCTSmooch";
     }
 
     public ReactNativeSmooch(ReactApplicationContext reactContext) {
@@ -30,16 +39,22 @@ public class ReactNativeSmooch extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void init(String integrationId, final Promise promise) {
-        Smooch.init(this, new Settings(integrationId), new SmoochCallback() {
+    public void initialize(String integrationId, final Promise promise) {
+        Log.i(LOG_TAG, "Time to initialize");
+
+        final Application app = (Application) getReactApplicationContext().getApplicationContext();
+        final Settings settings = new Settings(integrationId);
+
+        Smooch.init(app, settings, new SmoochCallback<InitializationStatus>() {
             @Override
-            public void run(Response response) {
+            public void run(Response<InitializationStatus> response) {
+                Log.i(LOG_TAG, "Inside the callback");
                 if (promise != null) {
                     if (response.getError() != null) {
                         promise.reject("" + response.getStatus(), response.getError());
                         return;
                     }
-
+                    initialized = true;
                     promise.resolve(null);
                 }
             }
@@ -48,12 +63,24 @@ public class ReactNativeSmooch extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void show() {
-        ConversationActivity.builder().show(getReactApplicationContext(), Intent.FLAG_ACTIVITY_NEW_TASK);
+       // ConversationActivity.builder().show(getReactApplicationContext());
+
+    //    ConversationListActivity.builder()
+    //     .showCreateConversationButton(true)
+    //     .withFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    //     .show(getReactApplicationContext());
     }
 
     @ReactMethod
     public void close() {
-        ConversationActivity.builder().close();
+        // ConversationListActivity.builder().close();
+    }
+
+    @ReactMethod
+    public void destroy() {
+        initialized = false;
+        // Smooch.destroy();
+        // ConversationListActivity.builder().close();
     }
 
     // @ReactMethod

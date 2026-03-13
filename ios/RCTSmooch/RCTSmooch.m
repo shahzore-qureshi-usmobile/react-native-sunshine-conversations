@@ -12,6 +12,9 @@ RCT_EXTERN_METHOD(show:(RCTPromiseResolveBlock)resolve
 RCT_EXTERN_METHOD(close:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(destroy:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
 // RCT_EXPORT_METHOD(show) {
 //   NSLog(@"Smooch Show");
 

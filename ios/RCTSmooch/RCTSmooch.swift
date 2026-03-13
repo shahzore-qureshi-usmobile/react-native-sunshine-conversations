@@ -21,9 +21,13 @@ class RCTSmooch: NSObject {
 
     Smooch.initWith(settings) { error, userInfo in
       if let error = error {
-          print("❌ Error initializing the Sunshine Conversations SDK: \(error.localizedDescription). Information: \(String(describing: userInfo?.description))")
+          let message = "❌ Error initializing the Sunshine Conversations SDK: \(error.localizedDescription). Information: \(String(describing: userInfo?.description))"
+          print(message)
+          reject(nil, message, nil)
       } else {
-          print("🟢 Successfully initialized the Sunshine Conversations SDK.")
+          let message = "🟢 Successfully initialized the Sunshine Conversations SDK."
+          print(message)
+          resolve(message)
           self.initialized = true
       }
     }
@@ -39,19 +43,30 @@ class RCTSmooch: NSObject {
       return
     }
 
+    print("Time to go into the queue");
     DispatchQueue.main.async {
+      print("In the queue now");
+
       guard let viewController = Smooch.newConversationListViewController(),
             let rootController = RCTPresentedViewController() else {
+        print("having issues finding a controller");
         reject(nil, "cannot show messaging view", nil)
         return
       }
 
+      print("time to decide on controller");
+
       if let navigationController = rootController.navigationController {
+        print("found navigation controller");
         navigationController.pushViewController(viewController, animated: true)
       } else {
+        print("found modal controller");
         let navigationController = UINavigationController(rootViewController: viewController)
         rootController.present(navigationController, animated: true, completion: nil)
       }
+
+      print("done showing");
+
       resolve(nil)
     }
   }
@@ -74,5 +89,15 @@ class RCTSmooch: NSObject {
       rootViewController.dismiss(animated: true, completion: nil)
       resolve(nil)
     }
+  }
+
+ @objc(destroy:rejecter:)
+  func destroy(
+    resolver resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) -> Void {
+    Smooch.destroy()
+    self.initialized = false
+    resolve(nil)
   }
 }

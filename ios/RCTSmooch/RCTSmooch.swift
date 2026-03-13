@@ -3,7 +3,7 @@ import React
 import Smooch
 
 @objc(RCTSmooch)
-class RCTSmooch {
+class RCTSmooch: NSObject {
   private var initialized = false
 
   @objc(initialize:resolver:rejecter:)
@@ -29,20 +29,20 @@ class RCTSmooch {
     }
   }
 
-  @objc(open:rejecter:)
-  func open(
+  @objc(show:rejecter:)
+  func show(
     resolver resolve: @escaping RCTPromiseResolveBlock,
     rejecter reject: @escaping RCTPromiseRejectBlock
   ) -> Void {
     if !initialized {
-      reject(nil, "Zendesk instance not initialized", nil)
+      reject(nil, "Smooch instance not initialized", nil)
       return
     }
 
     DispatchQueue.main.async {
       guard let viewController = Smooch.newConversationListViewController(),
             let rootController = RCTPresentedViewController() else {
-        reject(nil, "cannot open messaging view", nil)
+        reject(nil, "cannot show messaging view", nil)
         return
       }
 
